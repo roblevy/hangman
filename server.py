@@ -11,10 +11,19 @@ CORS(app)
 
 GAMES = {}
 LIFE_COUNT = 9
+WORDS_API_KEY = 'HKPISP7T'
 
 def get_random_word():
     """ Choose a word for a game of hangman """
-    return 'bananas'
+    url = 'https://random-word-api.herokuapp.com/word'
+    params = {
+        'key': WORDS_API_KEY,
+        'number': 1
+    }
+    res = requests.get(url, params=params)
+    word = res.json()[0]
+    print(word)
+    return word
 
 class Hangman():
     """ A representation of a single game of hangman """
@@ -32,9 +41,9 @@ class Hangman():
 
     def __repr__(self):
         return json.dumps({
-            'game_state': self.game_state,
+            'gameState': self.game_state,
             'complete': self.complete,
-            'lives_left': self.lives_left,
+            'livesLeft': self.lives_left,
             'guesses': self.guesses,
             'lastGuess': self.last_guess,
             'lastGuessSuccess': self.last_guess_success
