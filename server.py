@@ -43,6 +43,11 @@ class Hangman():
     def check_complete(self):
         self.complete = '_' not in self.game_state
 
+    def lose_life(self):
+        """ After an incorrect guess """
+        self.lives_left -= 1
+        self.last_guess_success = False
+
     def guess(self, letter):
         """ Guess a single letter """
         self.last_guess = letter
@@ -57,15 +62,24 @@ class Hangman():
                 self.last_guess_success = True
             else:
                 # The guess was wrong
-                self.lives_left -= 1
-                self.last_guess_success = False
+                self.lose_life()
+
+    def guess_word(self, word):
+        """ Attempt the whole word """
+        print('Attempting word guess', word, self.word)
+        if word == self.word:
+            self.complete = True
+            self.game_state = list(self.word)
+            self.last_guess_success = True
+        else:
+            self.lose_life()
 
 @app.route('/')
 def root():
     return 'Server is listening'
 
 @app.route('/games', methods=['POST'])
-def create_game():
+def games_create():
     """ Create a new game on the server with a unique ID """
     new_game = Hangman()
     return json.dumps({'id': new_game.id})
@@ -73,8 +87,37 @@ def create_game():
 @app.route('/games/<game_id>/guess_letter', methods=['POST'])
 def guess_letter(game_id):
     """ Guess a single letter """
-    game = GAMES[game_id]
+    try:
+        game = GAMES[game_id]
+    except KeyError:
+        return not_found()
     data = json.loads(request.data)
-    print('request.data', data)
     game.guess(data['guess'])
     return str(game)
+
+@app.route('/games/<game_id>/guess_word', methods=['POST'])
+def guess_word(game_id):
+    """ Guess the word """
+    try:
+        game = GAMES[game_id]
+    except KeyError:
+        return not_found()
+    data = json.loads(request.data)
+    game.guess_word(data['guess'])
+    return str(game)
+
+@app.route('/games')
+def games_index():
+    return json.dumps(list(GAMES.keys()))
+
+@app.route('/games/<game_id>')
+def games_show(game_id):
+    try:
+        game = GAMES[game_id]
+        return str(game)
+    except KeyError:
+        return not_found()
+
+def not_found():
+    """ A 404 for a game which doesn't exist on the server """
+    return json.dumps({'message': 'No such game'}), 404
