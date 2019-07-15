@@ -35,7 +35,7 @@ class Hangman():
         self.guesses = []
         self.lives_left = LIFE_COUNT
         self.complete = False
-        self.game_state = ['_'] * (len(self.word) - 1)
+        self.game_state = ['_'] * len(self.word)
         self.last_guess = None
         self.last_guess_success = False
 
