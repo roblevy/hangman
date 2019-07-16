@@ -11,7 +11,7 @@ CORS(app)
 
 GAMES = {}
 LIFE_COUNT = 9
-WORDS_API_KEY = 'HKPISP7T'
+WORDS_API_KEY = 'HAOCOQQR'
 
 def get_random_word():
     """ Choose a word for a game of hangman """

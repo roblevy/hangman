@@ -48,6 +48,8 @@ const gamesShow = (gameId) => {
 }
 
 newButton.addEventListener('click', function() {
+  guessInput.disabled = false;
+  submitButton.disabled = false;
   ajaxRequest({
     url: '/games',
     method: 'POST',
